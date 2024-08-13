@@ -1,11 +1,3 @@
-# Copyright 2024 University of Pittsburgh
-#
-# Use of this source code is governed by an MIT-style
-# license that can be found in the LICENSE file or at
-# https://opensource.org/licenses/MIT.
-#
-# Authors:  John Aronis
-
 from math import log, exp, e
 from numpy import logaddexp
 

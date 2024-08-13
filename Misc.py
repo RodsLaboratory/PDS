@@ -1,14 +1,33 @@
-# Copyright 2024 University of Pittsburgh
-#
-# Use of this source code is governed by an MIT-style
-# license that can be found in the LICENSE file or at
-# https://opensource.org/licenses/MIT.
-#
-# Authors:  John Aronis
-
 from Data import Data
 from Patient import Patient
 from math import nan
+
+def daily_positive(test,data):
+    result = []
+    for day in range(data.number_of_days()):
+        n = 0
+        for patient in range(data.number_of_patients(day)):
+            if (data.patient(day,patient).get_value(test+"LABRESULT")==test+"_POS"): n+=1
+        result.append(n)
+    return result
+
+def daily_negative(test,data):
+    result = []
+    for day in range(data.number_of_days()):
+        n = 0
+        for patient in range(data.number_of_patients(day)):
+            if (data.patient(day,patient).get_value(test+"LABRESULT")==test+"_NEG"): n+=1
+        result.append(n)
+    return result
+
+def _safe_divide(x,y):
+    if (y==0.0): return 0.0
+    else: return x/y
+
+def daily_positivity(test,data):
+    positive = daily_positive(test,data)
+    negative = daily_negative(test,data)
+    return [_safe_divide(p,n) for (p,n) in zip(positive,negative)]
 
 def empirical_p(window_size, min_window_size, daily_log_probability):
     result = []
@@ -33,5 +52,12 @@ def moving_average(window_size,list_of_numbers):
         result.append(average)
     return result
 
-# End-of-File
+def find_max_index(L):
+    max = L[0]
+    max_i = 0
+    for i in range(len(L)):
+        if L[i]>L[max_i]:
+            max_i=i
+            max = L[i]
+    return max_i
 
