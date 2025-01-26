@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 
 from Data import Data
 from Misc import *
@@ -9,7 +10,7 @@ import numpy as np
 
 # ------------------------------------------------------------------------
 
-data_directory = './data/'
+data_directory = './data'
 data_file = 'Sample_Data.csv'
 diseases = ['INFLUENZA','RSV','HMPV','PARAINFLUENZA','OTHER']
 ll_fields = [disease+'_loglikelihood_T' for disease in diseases]
@@ -19,7 +20,7 @@ equivalent_sample_size, moving_average_window = 10, 7
 
 # ------------------------------------------------------------------------
 
-data = Data(admission_date_field, delimiter, file_missing_value, data_missing_value, data_directory+data_file)
+data = Data(admission_date_field, delimiter, file_missing_value, data_missing_value, data_directory + os.sep + data_file)
 ili_tracker_results = ili_tracker(diseases, priors, ll_fields, equivalent_sample_size, base, data)
 daily_log_probability = ili_tracker_results['daily_log_probability']
 
@@ -43,7 +44,10 @@ for i in range(len(diseases)):
     axes[i].set_xticklabels(xticklabels)
     axes[i].secondary_xaxis("top")
 
-plt.show()
+output_png_file = data_directory + os.sep + data_file + '.png'
+plt.savefig(output_png_file)
+
+print("The Output of ILI Tracker saved to: ", output_png_file)
 
 # ------------------------------------------------------------------------
 
