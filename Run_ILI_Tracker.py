@@ -2,85 +2,52 @@
 
 from Data import Data
 from Misc import *
+from datetime import date
 from ILI_Tracker import ili_tracker
-from math import nan
-import numpy as np
 import matplotlib.pyplot as plt
-from brokenaxes import brokenaxes
+import numpy as np
 
-# ----------------------------------------------------------------------
+# ------------------------------------------------------------------------
 
-diseases  = [      'FLU',       'RSV',       'OTHER']
-priors    = [       0.05,        0.05,          0.9]
-ll_fields = ['log10_FLU', 'log10_RSV', 'log10_OTHER'] 
+data_directory = './data/'
+data_file = 'Sample_Data.csv'
+diseases = ['INFLUENZA','RSV','HMPV','PARAINFLUENZA','OTHER']
+ll_fields = [disease+'_loglikelihood_T' for disease in diseases]
+priors = normalize([(0.1/(len(diseases)-1)) if dx!='OTHER' else 0.9 for dx in diseases],1.0)
+admission_date_field, delimiter, file_missing_value, data_missing_value, base = 'Admit_date_time', ',', 'M', 'M', 10.0
+equivalent_sample_size, moving_average_window = 10, 7
 
-data_file = 'synthetic_data.csv'
+# ------------------------------------------------------------------------
 
-equivalent_sample_size = 10
-base = 10.0
-modeled_diseases = [dx for dx in diseases if dx!='OTHER']
-empirical_p_window = 28
-min_empirical_p_window = 10
-window = 7
-
-start = '00000601'
-end   = '00010531'
-
-# ----------------------------------------------------------------------
-
-data = Data(data_file, start, end)
-dates = data.dates
-
+data = Data(admission_date_field, delimiter, file_missing_value, data_missing_value, data_directory+data_file)
 ili_tracker_results = ili_tracker(diseases, priors, ll_fields, equivalent_sample_size, base, data)
 daily_log_probability = ili_tracker_results['daily_log_probability']
-daily_empirical_p = empirical_p(empirical_p_window,min_empirical_p_window,daily_log_probability)
 
 # ----------------------------------------------------------------------
 
-xticks =      [    0,    30,    61,    92,    122,    153,    183,   214,   245,   273,   304,   334,    364]
-xticklabels = ['6/1', '7/1', '8/1', '9/1', '10/1', '11/1', '12/1', '1/1', '2/1', '3/1', '4/1', '5/1', '5/31']
-
-yticklabels0 = ['p=1', 'p=0.1', 'p=0.01', 'p=0.0001']
+dates = data.dates()
+xticks = [dates.index(date) for date in dates if date.day==1]
+xticklabels = [str(dates[d].month)+'/'+str(dates[d].year) for d in xticks]
 
 # ----------------------------------------------------------------------
 
-fig, axes = plt.subplots(4)
+fig, axes = plt.subplots(len(diseases))
 fig.tight_layout(pad=2.0)
-fig.set_size_inches(12,8)
+fig.set_size_inches(16,10)
 
-axes[0].plot(moving_average(window,ili_tracker_results['FLU']))
-axes[0].set_ylabel('Influenza')
-axes[0].set_xticks(xticks)
-axes[0].set_xticklabels(xticklabels)
-axes[0].secondary_xaxis("top")
-    
-axes[1].plot(moving_average(window,ili_tracker_results['RSV']))
-axes[1].set_ylabel('RSV')
-axes[1].set_xticks(xticks)
-axes[1].set_xticklabels(xticklabels)
-axes[1].secondary_xaxis("top")
+for i in range(len(diseases)):
+    axes[i].set_title(diseases[i])
+    axes[i].plot(moving_average(moving_average_window,ili_tracker_results[diseases[i]]), color='blue')
+    axes[i].set_ylabel('ILI Tracker', color='blue')
+    axes[i].set_xticks(xticks)
+    axes[i].set_xticklabels(xticklabels)
+    axes[i].secondary_xaxis("top")
 
-axes[2].plot(moving_average(window,daily_log_probability))
-axes[2].set_ylabel('Daily log probability')
-axes[2].set_xticks(xticks)
-axes[2].set_xticklabels(xticklabels)
-axes[2].secondary_xaxis("top")
-
-#axes[3].set_yscale('symlog')
-axes[3].plot(daily_empirical_p)
-axes[3].set_ylabel('Empirical p')
-axes[3].set_xticks(xticks)
-axes[3].set_xticklabels(xticklabels)
-axes[3].secondary_xaxis("top")
-
-axes[3].axhline(0.1,color='red')
-axes[3].axhline(0.001,color='red')
-    
 plt.show()
 
-# ----------------------------------------------------------------------
+# ------------------------------------------------------------------------
 
 quit()
 
-# ----------------------------------------------------------------------
+# ------------------------------------------------------------------------
 

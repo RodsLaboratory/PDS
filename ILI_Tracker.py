@@ -39,7 +39,7 @@ def ili_tracker(diseases, original_priors, log_likelihood_fields, eqs, base, dat
         posteriors = [(e+(eqs*prior))/(total+eqs) for (e,prior) in zip(expected,original_priors)]
         posteriors = _normalize(posteriors,MIN_POSTERIOR)
         priors = posteriors
-        log_probability_day = log_probability_day - log(len(data.patients(day)))
+        log_probability_day = log_probability_day / len(data.patients(day))
         daily_log_probability.append(log_probability_day)
     result['daily_log_probability'] = daily_log_probability
     return result

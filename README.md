@@ -1,60 +1,68 @@
-# PDS
-Probabalistic Disease Surveillance
+#
+# Contents: ILI Tracker
+# Author:   John Aronis (jma18@pitt.edu)
+# Date:     January 12, 2025
+#
 
-THIS IS A PRELIMINARY RELEASE OF THE ILI TRACKER SOFTWARE TO TRACK
-CASES OF ILI DISEASES IN HOSPITAL ED DATA.
+This file contains instructions to run the ILI Tracker system.  For a
+full description of the system see:
 
-UPDATED FILES AND DATA FILES WILL BE PROVIDED WHEN AVAILABLE.
+    Aronis JM, Ye Y, Espino J, Hochheiser H, Michaels MG, Cooper GF. A
+    Bayesian System to Detect and Track Outbreaks of Influenza-Like
+    Illnesses Including Novel Diseases: Algorithm Development and
+    Validation. JMIR Public Health Surveill. 2024 Aug 13;10:e57349. doi:
+    10.2196/57349. PMID: 38805611; PMCID: PMC11350309.
 
-The following files should be present:
+The main classes are Data and ILI_Tracker.
 
-    Patient.py - Individual patient type.
-    Data.py - ED data.
-    Misc.py - Miscellaneous.
-    ILI_Tracker.py - The ILI Tracker algorithm.
-    Run_ILI_Tracker.py - Driver for ILI tracker.
+The Data class reads data from a csv file with one line per patient
+and fields for admission date and the log-likelihoods of each modeled
+disease. A small sample data file is in Sample_Data.csv.
 
-Set the following parameters in Run_ILI_Tracker.py:
+The file ILI_Tracker.py contains the method ili_tracker() that
+computes the daily expected number of patients with each of the
+modeled diseases.  It expects a Data object with patient data, along
+with several other parameters.
 
-    diseases - A list of logical names of modeled diseases.
-    
-    priors - The prior probabilities of the modeled diseases.  Should add to 1.0.
-    
-    ll_fields - The log-likelihood fields of the .csv file with the data.
-    
-    data_file - The name of the data file.
-    
-    equivalent_sample_size - Equivalent sample size for smoothing.
-    
-    base - Logarithmic base of the log-likelihood fields in the data.
-    
-    empirical_p_window - Size of window to compute empirical-p values.
-    
-    min_empirical_p_window - Minimum window to compute empirical-p.
-    
-    window - Size of moving-average window for graphing.
-    
-    start - Date to start tracking diseases.
-    
-    end - Date to end tracking diseases.
+The file Run_ILI_Tracker.py contains an example of how to run the ILI
+Tracker program.  It initializes several variables:
 
-The data should be in a .csv file with one line per patient.  The
-first (index 0) field should hold the date in YYYYMMDD format. Patient
-records should appear in chronological order.  There should be a field
-for each of ll_fields with a log-likelihood.
-
-    ADMIT_DATE,log10_flu,log10_rsv,log10_hmpv,log10_parainfluenza,log10_other
-    20130601,-10.0329060308,-11.0185611662,-10.2616324760,-11.2581801382,-9.07469311054
-    20130601,-13.0291665629,-15.3706085383,-16.1937268446,-15.6780165962,-10.6278225310
-    20130602,-13.0577121866,-14.7109602074,-13.6097268266,-14.3259426998,-10.3422741951
-    ...
-
-The log-likelihood values for each patient can be computed from training data as follows:
-
-    Compute P(finding|disease) as the fraction of patients with disease that also have finding.
+    data_directory is the directory containing the data files.
     
-    Estimate P(findings|disease) for an individual patient as the product P(finding|disease)
-    for those findings that are present in the patient.
+    data_file is the particular data file to use.
+    
+    diseases is a list of diseases that are to be tracked.
+    
+    ll_fields is a list of the fields with the log-likelihoods.
+    
+    priors is a list of initial prior probabilities of the
+      tracked diseases.
+    
+    admission_date_field is the name of the field containing the patient's
+      admission date.
+    
+    delimiter is the data file delimiter (usually a comma).
+    
+    file_missing_value is the token that designates a missing value
+      in the data file (usually "M" or empty).
+    
+    data_missing_value is the token that methods in the Data and Patient
+      class use to designate a missing value (usually "M").
+    
+    base is the logarithmic base of the log-likelihood fields in the
+      data file (usually 10.0 or e).
+    
+    equivalent_sample_size is the equivalent sample size to use to
+      avoid over-reliance on small samples
+    
+    moving_average_window is the window size to use when computing
+      moving averages for graphing results.
 
-See Run_ILI_Tracker.py for an example.
+The ili_tracker method expects several months or a year of data.  It
+returns a dictionary of daily expected numbers of patients with each
+modeled disease.  It also returns the daily log-probability of the
+data according to its predictions.  See the variable
+ili_tracker_results[] in Run_ILI_Tracker.py.
+
+Run_ILI_Tracker.py also illustrates how results can be plotted.
 
