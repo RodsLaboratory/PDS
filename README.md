@@ -41,7 +41,9 @@ modeled diseases.  It expects a Data object with patient data, along
 with several other parameters.
 
 The file Run_ILI_Tracker.py contains an example of how to run the ILI
-Tracker program.  It initializes several variables:
+Tracker program.  ```Run_ILI_Tracker.py -h``` will show the command line arguments.
+
+You can change the following variables in Run_ILI_Tracker.py:
 
     data_directory is the directory containing the data files.
     
