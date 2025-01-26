@@ -17,7 +17,23 @@ The main classes are Data and ILI_Tracker.
 
 The Data class reads data from a csv file with one line per patient
 and fields for admission date and the log-likelihoods of each modeled
-disease. A small sample data file is in Sample_Data.csv.
+disease. A small sample data file is in Sample_Data.csv to test if the 
+program runs.
+
+The file is in CSV format with the following columns:
+* ID - Record ID
+* SEASON - Season of the data
+* ICD_<DISEASE> - ICD Status of the disease [M - missing, T - true, F - false]
+* LAB_<DISEASE> - Lab Status of the disease [M,T,F]
+* LABEL_<DISEASE> - ICD/Lab Status of the disease [M,T,F] - using rule ***
+* Admit_date_time - Time of ED visit in YYYY-MM-DD HH24:MM:SS
+* <DISEASE>_loglikelihood_M - Log likelihood of the disease missing given the Label value
+* <DISEASE>_loglikelihood_T - Log likelihood of the diseasetrue  given the Label value
+* <DISEASE>_Prob_M - Probability of the disease missing given the Label value
+* <DISEASE>_Prob_T - Probability of the disease true given the Label value
+
+Please see https://www.rods.pitt.edu/research/pds/ for more information on how to 
+obtain additional data used in our research paper.
 
 The file ILI_Tracker.py contains the method ili_tracker() that
 computes the daily expected number of patients with each of the
