@@ -28,7 +28,7 @@ The file is in CSV format with the following columns:
 * LABEL_<DISEASE> - ICD/Lab Status of the disease [M,T,F] - using rule ***
 * Admit_date_time - Time of ED visit in YYYY-MM-DD HH24:MM:SS
 * <DISEASE>_loglikelihood_M - Log likelihood of the disease missing given the Label value
-* <DISEASE>_loglikelihood_T - Log likelihood of the diseasetrue  given the Label value
+* <DISEASE>_loglikelihood_T - Log likelihood of the disease true  given the Label value
 * <DISEASE>_Prob_M - Probability of the disease missing given the Label value
 * <DISEASE>_Prob_T - Probability of the disease true given the Label value
 
